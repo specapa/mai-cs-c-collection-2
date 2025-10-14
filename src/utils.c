@@ -22,7 +22,6 @@ void print_error_prefix(FILE *fp) {
 
 void u_status_print(FILE *fp, u_status_t st, const char *(*error_description)(int)) {
     if (!fp) fp = stderr;
-    print_error_prefix(fp);
     fprintf(fp, "%s\n", error_description(st));
 }
 

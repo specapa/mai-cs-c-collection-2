@@ -1,8 +1,9 @@
-# add_library(task1_lib argc.c math_operations.c)
-# target_include_directories(task1_lib PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+add_library(task1_lib parser.c task_math.c)
+target_include_directories(task1_lib PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+target_link_libraries(task1_lib PUBLIC utils)
 
 add_executable(task1 main.c)
-# target_link_libraries(task1 PRIVATE utils task1_lib)
+target_link_libraries(task1 PRIVATE utils task1_lib)
 
 add_executable(task1_tests
     task1_tests.cpp
@@ -11,7 +12,7 @@ add_executable(task1_tests
 target_link_libraries(task1_tests
     PRIVATE
     gtest_main
-    # task1_lib
+    task1_lib
     utils
     m
 )
