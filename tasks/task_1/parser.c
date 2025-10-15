@@ -45,11 +45,13 @@ u_status_t parse_arg_vector(int argc, char *argv[], usgshrt_vec_vec_t *vec, unsi
         usgshrt_vec_t *tmp = NULL;
         current_status = usgshrt_vec_init(&tmp);
         if (current_status != U_OK) {
+            usgshrt_vec_free(&tmp);
             fprintf(stderr, "INFO: can't init tmp usgshrt_vec [%s] due %s\n", argv[i], u_status_to_string(current_status));
             continue;
         }
         current_status = parse_number_to_vector(argv[i], &tmp);
         if (current_status != U_OK) {
+            usgshrt_vec_free(&tmp);
             fprintf(stderr, "INFO: can't parse arg with id %ld [%s] due %s\n", i, argv[i], u_status_to_string(current_status));
             continue;
         }
@@ -69,25 +71,40 @@ u_status_t parse_number_to_vector(char *string, usgshrt_vec_t **vec) {
     const char *p = string;
 
     stat = usgshrt_vec_init(&tmp);
-    if (stat != U_OK) return stat;
+    if (stat != U_OK) {
+        usgshrt_vec_free(&tmp);
+        return stat;
+    }
     
     while (isspace((unsigned char)*p)) ++p;
     if (*p == '+' || *p == '-') {
         ++p;
     }
     while (*p && *p != '.') {
-        if (!isdigit((unsigned char)*p)) return U_INVALID_FORMAT;
+        if (!isdigit((unsigned char)*p)) {
+            usgshrt_vec_free(&tmp);
+            return U_INVALID_FORMAT;
+        }
         ++p;
     }
     if (*p && (unsigned char)*p == '.') { 
         ++p;
-    } else return U_INVALID_FORMAT;
+    } else {
+        usgshrt_vec_free(&tmp);
+        return U_INVALID_FORMAT;
+    }
 
     while (*p) {
-        if (!isdigit((unsigned char)*p)) return U_INVALID_FORMAT;
+        if (!isdigit((unsigned char)*p)) {
+            usgshrt_vec_free(&tmp);
+            return U_INVALID_FORMAT;
+        }
         int d = *p - '0';
         stat = usgshrt_vec_push_back(tmp, d);
-        if (stat != U_OK) return stat;
+        if (stat != U_OK) {
+            usgshrt_vec_free(&tmp);
+            return stat;
+        }
         ++p;
     }
 
