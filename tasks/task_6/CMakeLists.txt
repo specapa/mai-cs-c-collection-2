@@ -1,4 +1,4 @@
-add_library(task6_lib parser.c student.c)
+add_library(task6_lib parser.c student.c command_handler.c)
 target_include_directories(task6_lib PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 target_link_libraries(task6_lib PUBLIC utils)
 

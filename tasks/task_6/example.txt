@@ -1,0 +1,10 @@
+1 John Smith CS101 5 4 3 5 5
+2 Alice Brown CS101 4 5 4 5 4
+3 Bob Johnson CS102 3 3 4 4 5
+4 Emily Davis CS101 5 5 5 4 5
+5 Michael Miller CS103 2 3 3 4 3
+6 Sarah Wilson CS102 4 4 5 4 5
+7 David Moore CS101 5 5 5 5 5
+8 Laura Taylor CS103 3 4 3 3 4
+9 James Anderson CS102 4 4 4 4 4
+10 Olivia Thomas CS101 5 4 5 5 4

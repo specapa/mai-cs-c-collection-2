@@ -1,9 +1,22 @@
 #include "parser.h"
+#include <stdarg.h>
 #include "stdio.h"
 #include "string.h"
 #include "../../include/utils_2.h"
 #include "student.h"
 #include "vectors.h"
+
+void commands(FILE *stream) {
+    fprintf(stream,
+    ANSI_COLOR_MAGENTA
+    RIP
+    COMMAND_SEARCH_CALL " [" FLAG_ID " (ID), " FLAG_NAME " (Name), " FLAG_SURNAME " (Surname), " FLAG_GROUP " (Group)] [VALUE]\n"
+    COMMAND_TRASE_SEARCH_CALL " [" FLAG_ID " (ID), " FLAG_NAME " (Name), " FLAG_SURNAME " (Surname), " FLAG_GROUP " (Group)] [VALUE]\n"
+    COMMAND_TRASE_CALL "\n"
+    COMMAND_SORT_CALL " [" FLAG_ID " (ID), " FLAG_NAME " (Name), " FLAG_SURNAME " (Surname), " FLAG_GROUP " (Group)]\n"
+    COMMAND_EXIT_CALL "\n"
+    ANSI_COLOR_RESET);
+}
 
 void using(FILE *stream, char *run_command) {
     fprintf(stream, "Using: %s <-f> <-o>\n"
@@ -12,60 +25,79 @@ void using(FILE *stream, char *run_command) {
     "[-o] -- The out trace file\n", run_command);
 }
 
-u_status_t seperate_string_to_args(string_t *string, string_vec_t *argv) {
-
+void unifreestring(int n, ...) {
+    char **string;
+    va_list factor;
+    va_start(factor, n);
+    for(int i = 0; i < n; ++i) {
+        string = va_arg(factor, char **);
+        free(*string);
+        *string = NULL;
+    }
+    va_end(factor);
 }
 
-command_enum_t command_processing(FILE *stream) {
-    fprintf(stream,
-    RIP
-    COMMAND_SEARCH_CALL " [ID, N (for Name), S (for Surname), G (for Group)] [VALUE]\n"
-    COMMAND_SORT_CALL " [ID, N (Name), S (Surname), G (Group)]\n"
-    COMMAND_TS_CALL " [ID, N (for Name), S (for Surname), G (for Group)] [VALUE]\n"
-    "/exit\n");
-
+command_enum_t command_processing(FILE *stream, search_enum_t *search_by_p, char **value_p) {
     u_status_t status;
     
-    char * pch = strtok (stream," ");
+    char *line;
+    status = read_string(stdin, &line);
+    if (status != U_OK) {
+        unifreestring(1, &line);
+        fprintf(stderr, "ERROR: can't init string");
+        return status;
+    }
+    char *pch = strtok(line, " ");
     
     command_enum_t command = COMMAND_SKIP;
     if (strcmp(pch, COMMAND_SEARCH_CALL) == 0) {
         command = COMMAND_SEARCH;
+    } else if (strcmp(pch, COMMAND_TRASE_SEARCH_CALL) == 0) {
+        command = COMMAND_TS;
+    } else if (strcmp(pch, COMMAND_TRASE_CALL) == 0) {
+        unifreestring(1, &line);
+        return COMMAND_TRACE;
     } else if (strcmp(pch, COMMAND_SORT_CALL) == 0) {
         command = COMMAND_SORT;
-    } else if (strcmp(pch, COMMAND_TS_CALL) == 0) {
-        command = COMMAND_TS;
     } else if (strcmp(pch, COMMAND_EXIT_CALL) == 0) {
+        unifreestring(1, &line);
         return COMMAND_EXIT;
     } else {
+        printf(ANSI_COLOR_RED "Wrong command!\n" ANSI_COLOR_RESET);
+        unifreestring(1, &line);
         return COMMAND_SKIP;
     }
-    
-    while (pch != NULL)
-    {
-        pch = strtok (NULL, " ");
-    }
-    return 0;
 
-    char *scanned;
-    status = read_string(stdin, &scanned);
-    if (status != U_OK) {
-        free(scanned);
-        scanned = NULL;
-        fprintf(stderr, "ERROR: can't init string");
-        return status;
-    }
+    pch = strtok(NULL, " ");
+    search_enum_t search = WRONG;
 
-    for (uint i = 0; scanned[i] != '\0'; ++i) {
-
+    if (strcmp(pch, FLAG_ID) == 0) {
+        search = ID;
+    } else if (strcmp(pch, FLAG_NAME) == 0) {
+        search = NAME;
+    } else if (strcmp(pch, FLAG_SURNAME) == 0) {
+        search = SURNAME;
+    } else if (strcmp(pch, FLAG_GROUP) == 0) {
+        search = GROUP;
+    } else {
+        printf(ANSI_COLOR_RED "Wrong command format!\n" ANSI_COLOR_RESET);
+        unifreestring(1, &line);
+        return COMMAND_SKIP;
     }
 
-    free(scanned);
+    *search_by_p = search;
+    char *value = strtok(NULL, " ");
+    if (value) {
+        *value_p = strdup(value);
+    } else {
+        *value_p = NULL;
+    }
 
+    unifreestring(1, &line);
     return command;
 }
 
-int iterate(students_t **students) {
-    command_enum_t command = command_processing(stdout);
+command_enum_t iterate(search_enum_t *search_by, char **value) {
+    command_enum_t command = command_processing(stdout, search_by, value);
     return command;
 }
