@@ -82,13 +82,37 @@ static char **split_words(const char *line, size_t *out_count) {
     *out_count = 0;
     char **words = NULL;
 
+    int flagInSpace = 1;
+
     const char *p = line;
+    const char *before_space = line;
+
     while (*p) {
-        while (isspace((unsigned char)*p)) p++;
+
+        // remove spaces in the beginning of line
+        // while (isspace((unsigned char)*p)) p++;
         if (!*p) break;
 
         const char *start = p;
-        while (*p && !isspace((unsigned char)*p)) p++;
+        before_space = start;
+
+        while (*p) {
+            if (isspace((unsigned char)*p)) {
+                if (!flagInSpace) {
+                    break;
+                }
+            } else {
+                flagInSpace = 0;
+            }
+            p++;
+        }
+
+        if (flagInSpace) {
+            break;
+        }
+
+        flagInSpace = 1;
+
 
         size_t len = p - start;
 
@@ -120,6 +144,13 @@ static char **split_words(const char *line, size_t *out_count) {
     return words;
 }
 
+static void print_short(FILE *out, char** words, int n) {
+    for (int i = 0; i < n; ++i) {
+        fprintf(out, "%s", words[i]);
+    }
+    putc('\n', out);
+}
+
 u_status_t process_file(const char *input_file, const char *output_file) {
     FILE *in = fopen(input_file, "r");
     if (!in) {
@@ -139,7 +170,8 @@ u_status_t process_file(const char *input_file, const char *output_file) {
 
     while ((line = read_line(in)) != NULL) {
         char *trimmed = line;
-        while (isspace((unsigned char)*trimmed)) trimmed++;
+        // remove spaces in the beginning of line
+        // while (isspace((unsigned char)*trimmed)) trimmed++;
 
         if (strlen(trimmed) <= 80) {
             fprintf(out, "%s", trimmed);
@@ -167,7 +199,11 @@ u_status_t process_file(const char *input_file, const char *output_file) {
                 current_len = next_len;
                 i++;
             }
-            justify_and_write(out, &words[start], i - start, WIDTH);
+            if (i == word_count) {
+                print_short(out, &words[start], i - start);
+            } else {
+                justify_and_write(out, &words[start], i - start, WIDTH);
+            }
         }
 
         for (size_t j = 0; j < word_count; j++)

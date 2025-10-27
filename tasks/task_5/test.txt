@@ -1,0 +1,5 @@
+SHORT STRING: LESS THEN 80
+  aboba   aboba        aboba   aboba        aboba   aboba        aboba   aboba
+LONG STRING
+  aboba   aboba        aboba   aboba        aboba   aboba        aboba   aboba        aboba   aboba
+

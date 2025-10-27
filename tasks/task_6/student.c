@@ -85,7 +85,7 @@ u_status_t students_load(students_t *students, const char *filepath) {
     char name[64], surname[64], group[64];
     unsigned char marks_arr[5];
 
-    while (fscanf(f, "%zu %63s %63s %63s %hhu %hhu %hhu %hhu %hhu",
+    while (fscanf(f, "%zu %63s %63s %63s %c %c %c %c %c",
                   &id, name, surname, group,
                   &marks_arr[0], &marks_arr[1], &marks_arr[2],
                   &marks_arr[3], &marks_arr[4]) == 9) {
@@ -97,7 +97,7 @@ u_status_t students_load(students_t *students, const char *filepath) {
 
         marks_init(&s->marks);
         for (int i = 0; i < 5; ++i)
-            marks_push_back(s->marks, marks_arr[i]);
+            marks_push_back(s->marks, marks_arr[i] - '0');
 
         students_push_back(students, s);
     }

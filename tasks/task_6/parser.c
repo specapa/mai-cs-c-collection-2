@@ -44,10 +44,16 @@ command_enum_t command_processing(FILE *stream, search_enum_t *search_by_p, char
     status = read_string(stdin, &line);
     if (status != U_OK) {
         unifreestring(1, &line);
-        fprintf(stderr, "ERROR: can't init string");
+        fprintf(stderr, "ERROR: can't init string\n");
         return status;
     }
     char *pch = strtok(line, " ");
+
+    if (pch == NULL) {
+        fprintf(stderr, "ERROR: empty input!\n");
+        unifreestring(1, &line);
+        return COMMAND_SKIP;
+    }
     
     command_enum_t command = COMMAND_SKIP;
     if (strcmp(pch, COMMAND_SEARCH_CALL) == 0) {
@@ -70,6 +76,12 @@ command_enum_t command_processing(FILE *stream, search_enum_t *search_by_p, char
 
     pch = strtok(NULL, " ");
     search_enum_t search = WRONG;
+
+    if (pch == NULL) {
+        fprintf(stderr, "ERROR: Can't parse search type!\n");
+        unifreestring(1, &line);
+        return COMMAND_SKIP;
+    }
 
     if (strcmp(pch, FLAG_ID) == 0) {
         search = ID;

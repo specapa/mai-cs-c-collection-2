@@ -11,6 +11,12 @@ void handle_command(command_enum_t command, search_enum_t search_by, const char 
         return;
     }
 
+    if (search_by == WRONG) {
+        fprintf(stderr, "ERROR: empty search by type\n");
+        return;
+    }
+
+
     switch (command) {
         case COMMAND_SEARCH:
             handle_search(search_by, value, students, NULL);
@@ -97,6 +103,8 @@ void handle_sort(search_enum_t search_by, students_t *students) {
             students_sort(students, cmp_by_group);
             sort_type = "group";
             break;
+        default: 
+            return;
     }
 
     printf("Sorted students by %s:\n", sort_type);
