@@ -157,7 +157,7 @@ int main(void) {
     printf("\n   d) Числа Фибоначчи в Цекендорфе:\n");
     unsigned int fib[] = {1, 2, 3, 5, 8, 13, 21, 34};
     for (int i = 0; i < 8; i++) {
-        overfprintf(stdout, "      F(%d) = %u = %Zr\n", 3, 2, 3);
+        overfprintf(stdout, "      F(%d) = %u = %Zr\n", i, fib[i], fib[i]);
     }
     
     // 15. Тест записи в файл
