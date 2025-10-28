@@ -17,4 +17,7 @@ int main() {
 
     oversscanf("1|2|3|k", "%u|%u|%u|%c", &a, &b, &c, &chr);
     printf("%u %u %u %c\n", a, b, c, chr);
+
+    oversscanf("_&* 5|6|7|z", "_&* %u|%u|%u|%c", &a, &b, &c, &chr);
+    printf("%u %u %u %c\n", a, b, c, chr);
 }

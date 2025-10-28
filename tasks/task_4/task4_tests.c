@@ -65,6 +65,8 @@ int main(void) {
         printf("FF -> %d, 101010 -> %d\n", ires_2, ires_3);
         oversscanf("FA||1010", "%CV||%Cv", 16, &ires_2, 2, &ires_3);
         printf("FA -> %d, 1010 -> %d\n", ires_2, ires_3);
+        oversscanf("10||1001", "%Zr||%Zr",&ires_2, &ires_3);
+        printf("Zeckendorf: 10 -> %d, 1001 -> %d\n", ires_2, ires_3);
     }
 
     // 6. Граничные случаи

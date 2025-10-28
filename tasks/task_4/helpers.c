@@ -2,6 +2,8 @@
 #include <string.h>
 #include <limits.h>
 
+#define MAX_FIB_LEN 47
+
 static int strcicmp(char const *a, char const *b, int n)
 {
     for (int i = 0; i < 0; i++, a++, b++) {
@@ -50,28 +52,46 @@ int roman_to_int(const char *roman, int *out) {
 int zeckendorf_to_uint(const char *str, unsigned int *out) {
     if (!str || !out) return -1;
 
-    size_t len = strlen(str);
+    size_t len;
+    for (const char *c = str; *c == '1' || *c == '0'; ++c) ++len;
+    
     if (len == 0) return -1;
+    if (len > MAX_FIB_LEN) return -1;
 
-    unsigned int fib[50];
+    unsigned int fib[MAX_FIB_LEN];
     fib[0] = 1;
-    fib[1] = 2;
-    for (int i = 2; i < 50; i++)
+    if (len > 1) {
+        fib[1] = 2;
+    }
+    for (size_t i = 2; i < len; i++) {
+        if (fib[i - 1] > (unsigned int)(-1) - fib[i - 2]) {
+             return -1;
+        }
         fib[i] = fib[i - 1] + fib[i - 2];
+    }
 
     unsigned int result = 0;
+    int last_was_one = 0;
+
     for (size_t i = 0; i < len; i++) {
-        char c = str[len - i - 1];
+        char c = str[i];
+        
         if (c == '1') {
-            if (i >= 50) return -1;
-            result += fib[i];
-        } else if (c != '0') {
-            return -1;
+            if (last_was_one) return -1; 
+            last_was_one = 1;
+            if (result > (unsigned int)(-1) - fib[len - 1 - i]) {
+                return -1;
+            }
+            result += fib[len - 1 - i];
+        } else if (c == '0') {
+            last_was_one = 0;
+        } else {
+            break;
         }
     }
 
     *out = result;
-    return 0;
+    return (int)len;
 }
 
 int base_to_decimal(const char *str, int base, int uppercase, int *out) {
@@ -82,6 +102,7 @@ int base_to_decimal(const char *str, int base, int uppercase, int *out) {
     int is_negative = 0;
 
     while (*ptr == ' ' || *ptr == '\t') ptr++;
+    // while (*ptr != '\0' && !isalpha(*ptr) && !isdigit(*ptr)) ptr++;
 
     if (*ptr == '-') { is_negative = 1; ptr++; }
     else if (*ptr == '+') ptr++;
@@ -106,7 +127,8 @@ int base_to_decimal(const char *str, int base, int uppercase, int *out) {
         else if (c >= 'A' && c <= 'Z')
             digit = c - 'A' + 10;
         else
-            return -1;
+            break;
+            // return -1;
 
         if (digit >= base) return -1;
 
@@ -114,12 +136,12 @@ int base_to_decimal(const char *str, int base, int uppercase, int *out) {
             return -1;
 
         value = value * base + digit;
-        has_digits = 1;
+        ++has_digits;
     }
 
     if (!has_digits) return -1;
     if (is_negative) value = -value;
 
     *out = (int)value;
-    return 0;
+    return has_digits;
 }
