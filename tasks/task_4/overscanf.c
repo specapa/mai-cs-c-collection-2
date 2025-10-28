@@ -84,12 +84,39 @@ int oversvsscanf(const char *input, const char *format, va_list args) {
             strncpy(spec, percent, len);
             spec[len] = '\0';
 
+            printf("1 | format: \"%s\" string: \"%s\"\n", spec, input);
+
             int n = vsscanf(input, spec, args);
+            va_arg(args, void*);
 
             if (n == 1)
                 assigned++;
 
-            input += strcspn(input, " \t\n");
+            const char *fmt_part = percent;
+            const char *inp_part = input;
+
+            const char *after_percent = strchr(fmt_part, '%');
+            if (after_percent) {
+                after_percent++;
+                while (*after_percent && strchr("diufFeEgGxXoscp%", *after_percent) == NULL)
+                    after_percent++;
+                if (*after_percent) after_percent++;
+            } else {
+                after_percent = fmt_part;
+            }
+
+            while (*inp_part && *after_percent && *inp_part != *after_percent)
+                inp_part++;
+
+            while (*inp_part && *after_percent && *after_percent != '%') {
+                if (*inp_part != *after_percent)
+                    break;
+                inp_part++;
+                after_percent++;
+            }
+
+            printf("2 | format: \"%s\" string: \"%s\"\n", fmt_part, inp_part);
+            input = inp_part;
             p = next;
         }
     }

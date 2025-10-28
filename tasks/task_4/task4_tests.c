@@ -59,8 +59,13 @@ int main(void) {
 
     // 5. Комбинированное использование
     print_separator("5. Комбинированное использование");
-    oversscanf("XIV FF 101010", "%Ri %CV %Cv", &ires, 16, &ires, 2, &ires);
-    printf("   XIV -> %d, FF -> %d, 101010 -> %d\n", ires, ires, ires);
+    {   
+        int ires_2 = -1, ires_3 = -1;
+        oversscanf("FF 101010", "%CV %Cv", 16, &ires_2, 2, &ires_3);
+        printf("FF -> %d, 101010 -> %d\n", ires_2, ires_3);
+        oversscanf("FA||1010", "%CV||%Cv", 16, &ires_2, 2, &ires_3);
+        printf("FA -> %d, 1010 -> %d\n", ires_2, ires_3);
+    }
 
     // 6. Граничные случаи
     print_separator("6. Граничные случаи");
