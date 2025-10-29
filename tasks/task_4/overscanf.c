@@ -15,17 +15,35 @@ int handle_scan_Ro(const char **input, va_list *args) {
     if (sscanf(*input, "%127s", token) != 1) return 0;
 
     int mv = roman_to_int(token, out);
+    if (mv < 0) {
+        #ifdef OVERSCAN_WARNINGS
+            fprintf(stderr, "Warning:  roman_to_int(token, out) returned negative value\n");
+        #endif
+        return 0;
+    }
     *input += mv;
     return 1;
 }
 
 int handle_scan_Zr(const char **input, va_list *args) {
-    unsigned int *out = va_arg(*args, unsigned int*);
+    unsigned int *out = (unsigned int*)va_arg(*args, void*);
+    if (out == NULL) {
+        #ifdef OVERSCAN_WARNINGS
+            fprintf(stderr, "Warning: can't get variable addres to write\n");
+        #endif
+        return 0;
+    }
 
     char token[256];
     if (sscanf(*input, "%255s", token) != 1) return 0;
 
     int mv = zeckendorf_to_uint(token, out);
+    if (mv < 0) {
+        #ifdef OVERSCAN_WARNINGS
+            fprintf(stderr, "Warning: zeckendorf_to_uint(token, out) returned negative value\n");
+        #endif
+        return 0;
+    }
     *input += mv;
     return 1;
 }
@@ -38,7 +56,13 @@ int handle_scan_Cv(const char **input, va_list *args) {
     char token[128];
     if (sscanf(*input, "%127s", token) != 1) return 0;
 
-    int mv = base_to_decimal(token, base, 1, out); 
+    int mv = base_to_decimal(token, base, 0, out); 
+    if (mv < 0) {
+        #ifdef OVERSCAN_WARNINGS
+            fprintf(stderr, "Warning: base_to_decimal(token, base, 1, out); returned negative value\n");
+        #endif
+        return 0;
+    }
     *input += mv;
     return 1;
 }
@@ -51,7 +75,13 @@ int handle_scan_CV(const char **input, va_list *args) {
     char token[128];
     if (sscanf(*input, "%127s", token) != 1) return 0;
 
-    int mv = base_to_decimal(token, base, 1, out); 
+    int mv = base_to_decimal(token, base, 1, out);
+    if (mv < 0) {
+        #ifdef OVERSCAN_WARNINGS
+            fprintf(stderr, "Warning: base_to_decimal(token, base, 1, out); returned negative value\n");
+        #endif
+        return 0;
+    }
     *input += mv;
     return 1;
 }

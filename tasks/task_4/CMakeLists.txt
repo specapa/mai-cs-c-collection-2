@@ -7,11 +7,20 @@ add_executable(task4_tests
     task4_tests.c
 )
 
+add_executable(task4_tests_old
+    task4_tests_old.c
+)
+
 add_executable(task4_def
     task4_def.c
 )
 
 target_link_libraries(task4_tests
+    PRIVATE
+    task4_lib
+    m
+)
+target_link_libraries(task4_tests_old
     PRIVATE
     task4_lib
     m
@@ -25,7 +34,10 @@ target_link_libraries(task4_def
 )
 
 target_include_directories(task4_tests PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+target_include_directories(task4_tests_old PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
 target_include_directories(task4_def PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+
+add_compile_definitions(OVERSCAN_WARNINGS)
 
 enable_testing()
 add_test(NAME Task4IntegrationTests COMMAND task4_tests)

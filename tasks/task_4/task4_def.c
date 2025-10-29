@@ -9,7 +9,11 @@ int main() {
     oversscanf("1450 1451 1452", "%u %u %u", &a, &b, &c);
     printf("%u %u %u\n", a, b, c);
     
-    oversscanf("6", "%c", &chr);
+    double dob = 0;
+    oversscanf("1450 1451 3.14", "%u %u %.1f", &a, &b, &dob);
+    printf("%u %u %lf\n", a, b, dob);
+    
+    oversscanf("+", "%c", &chr);
     printf("%c\n", chr);
 
     oversscanf("14 15 16 g", "%u %u %u %c", &a, &b, &c, &chr);
